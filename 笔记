@@ -1,0 +1,162 @@
+技术
+1.String,StringBuider,Stringbuffer的使用
+对于三者使用的总结：1.如果要操作少量的数据用 = String
+　　　　　　        2.单线程操作字符串缓冲区 下操作大量数据 = StringBuilder
+　　　　　　        3.多线程操作字符串缓冲区 下操作大量数据 = StringBuffer
+使用案例
+//       使用StringBuilder字符串拼接,比使用string性能高
+        StringBuilder str = new StringBuilder();
+//        添加到项目考核表中
+        if (ids != null && ids.length > 0) {
+            for (int i = 0; i < ids.length; i++) {
+                str.append(ids[i]+" ");
+            }
+            String checkId=str.toString();
+            shfwzPlanProcheck.setCheckId(checkId);
+            shfwzPlanProcheckService.add(shfwzPlanProcheck);
+        }
+拼接字符串(StringBuider>String)性能测试
+public static void main(String[] args) {
+    try {
+        int count = 20000;
+        long begin = System.currentTimeMillis();
+        testString(count);
+        long end = System.currentTimeMillis();
+        long time = end - begin;
+        System.out.println("String 方法拼接" + count + "次消耗时间：" + time + "毫秒");
+        begin = System.currentTimeMillis();
+        testStringBuilder(count);
+        end = System.currentTimeMillis();
+        time = end - begin;
+        System.out.println("StringBuilder 方法拼接" + count + "次消耗时间：" + time + "毫秒");
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+private static String testString(int count) {
+    String result = "";
+    for (int i = 0; i < count; i++) {
+        result += "hello ";
+    }
+    return result;
+}
+private static String testStringBuilder(int count) {
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < count; i++) {
+        sb.append("hello");
+    }
+    return sb.toString();
+}
+
+2.代码检查工具:sonar
+3.数据库三范式
+第一范式就是数据库的字段不能出现冗余，
+第二范式每个表都要有主键，且表里的字段要和主键有直接关系。
+第三范式要求表与表之间的关联要通过主键去关联。
+Maven 
+打包 maven install
+初始化 maven help:system
+https://blog.csdn.net/yhc2113/article/details/80779789
+https://www.ibm.com/developerworks/cn/java/j-lo-spring25-ioc/
+BTM学习社区
+@Service 声明是一个bean对象,bean的id为类名首字母小写
+@Autiwire 扫描bean存在该注解属性会以byType方式注入
+作用:消除bean对象的get/set的方法,spring自动帮你get/set
+@Resource 扫描bean存在该注解,默认以byName方式注入,
+它有两个属性name和type，指定name则以byName方式注入,指定type则以byType方式注入
+自动装配有两种方式：
+1.byName
+被装配类中的setter方法还是需要的，因为是byName，所以setter方法名要与bean的id对应，比如bean的id为cd，那么setter方法名为setCd。
+2.byType
+被装配类中的setter方法的参数类型要与bean的class的类型一样，才能自动装配到。
+注意：以上两种自动装配方法本质上都是通过反射，构造出对应的setter方法，然后执行setter方法。
+DI注入方法
+Set注入:只依赖set方法,不依赖属性和get方法
+构造注入
+接口注入(以被淘汰)
+Idea的使用
+1.全局搜索
+
+全局搜索到之后，使用文件定位
+
+2.查询全局类(包括jar包里面的类)
+
+
+IntelliJ IDEA中如何设置30分钟自动刷新svn
+
+Svn提交不想提交的文件解决办法
+
+删除一行的快捷键 ctrl+y
+数据库优化;https://zhuanlan.zhihu.com/p/61080244
+前言
+数据库优化一方面是找出系统的瓶颈,提高MySQL数据库的整体性能,而另一方面需要合理的结构设计和参数调整,以提高用户的相应速度,同时还要尽可能的节约系统资源,以便让系统提供更大的负荷.
+1. 优化一览图
+
+
+2. 优化
+笔者将优化分为了两大类,软优化和硬优化,软优化一般是操作数据库即可,而硬优化则是操作服务器硬件及参数设置.
+2.1 软优化
+2.1.1 查询语句优化
+1.首先我们可以用EXPLAIN或DESCRIBE(简写:DESC)命令分析一条查询语句的执行信息.
+2.例:
+DESC SELECT * FROM `user`
+显示:
+
+
+
+其中会显示索引和查询数据读取数据条数等信息.
+2.1.2 优化子查询
+在MySQL中,尽量使用JOIN来代替子查询.因为子查询需要嵌套查询,嵌套查询时会建立一张临时表,临时表的建立和删除都会有较大的系统开销,而连接查询不会创建临时表,因此效率比嵌套子查询高.
+2.1.3 使用索引
+索引是提高数据库查询速度最重要的方法之一,关于索引可以参高笔者<MySQL数据库索引>一文,介绍比较详细,此处记录使用索引的三大注意事项:
+.LIKE关键字匹配'%'开头的字符串,不会使用索引.
+.OR关键字的两个字段必须都是用了索引,该查询才会使用索引.
+.使用多列索引必须满足最左匹配.
+2.1.4 分解表
+对于字段较多的表,如果某些字段使用频率较低,此时应当,将其分离出来从而形成新的表,
+2.1.5 中间表
+对于将大量连接查询的表可以创建中间表,从而减少在查询时造成的连接耗时.
+2.1.6 增加冗余字段
+类似于创建中间表,增加冗余也是为了减少连接查询.
+2.1.7 分析表,,检查表,优化表
+分析表主要是分析表中关键字的分布,检查表主要是检查表中是否存在错误,优化表主要是消除删除或更新造成的表空间浪费.
+1. 分析表: 使用 ANALYZE 关键字,如ANALYZE TABLE user;
+
+
+
+.Op:表示执行的操作.
+.Msg_type:信息类型,有status,info,note,warning,error.
+.Msg_text:显示信息.
+2. 检查表: 使用 CHECK关键字,如CHECK TABLE user [option]
+option 只对MyISAM有效,共五个参数值:
+.QUICK:不扫描行,不检查错误的连接.
+.FAST:只检查没有正确关闭的表.
+.CHANGED:只检查上次检查后被更改的表和没被正确关闭的表.
+.MEDIUM:扫描行,以验证被删除的连接是有效的,也可以计算各行关键字校验和.
+.EXTENDED:最全面的的检查,对每行关键字全面查找.
+3. 优化表:使用OPTIMIZE关键字,如OPTIMIZE [LOCAL|NO_WRITE_TO_BINLOG] TABLE user;
+LOCAL|NO_WRITE_TO_BINLOG都是表示不写入日志.,优化表只对VARCHAR,BLOB和TEXT有效,通过OPTIMIZE TABLE语句可以消除文件碎片,在执行过程中会加上只读锁.
+2.2 硬优化
+2.2.1 硬件三件套
+1.配置多核心和频率高的cpu,多核心可以执行多个线程.
+2.配置大内存,提高内存,即可提高缓存区容量,因此能减少磁盘I/O时间,从而提高响应速度.
+3.配置高速磁盘或合理分布磁盘:高速磁盘提高I/O,分布磁盘能提高并行操作的能力.
+2.2.2 优化数据库参数
+优化数据库参数可以提高资源利用率,从而提高MySQL服务器性能.MySQL服务的配置参数都在my.cnf或my.ini,下面列出性能影响较大的几个参数.
+key_buffer_size:索引缓冲区大小
+table_cache:能同时打开表的个数
+query_cache_size和query_cache_type:前者是查询缓冲区大小,后者是前面参数的开关,0表示不使用缓冲区,1表示使用缓冲区,但可以在查询中使用SQL_NO_CACHE表示不要使用缓冲区,2表示在查询中明确指出使用缓冲区才用缓冲区,即SQL_CACHE.
+sort_buffer_size:排序缓冲区
+2.2.3 分库分表
+因为数据库压力过大，首先一个问题就是高峰期系统性能可能会降低，因为数据库负载过高对性能会有影响。另外一个，压力过大把你的数据库给搞挂了怎么办？所以此时你必须得对系统做分库分表 + 读写分离，也就是把一个库拆分为多个库，部署在多个数据库服务上，这时作为主库承载写入请求。然后每个主库都挂载至少一个从库，由从库来承载读请求。
+
+
+
+2.2.4 缓存集群
+如果用户量越来越大，此时你可以不停的加机器，比如说系统层面不停加机器，就可以承载更高的并发请求。然后数据库层面如果写入并发越来越高，就扩容加数据库服务器，通过分库分表是可以支持扩容机器的，如果数据库层面的读并发越来越高，就扩容加更多的从库。但是这里有一个很大的问题：数据库其实本身不是用来承载高并发请求的，所以通常来说，数据库单机每秒承载的并发就在几千的数量级，而且数据库使用的机器都是比较高配置，比较昂贵的机器，成本很高。如果你就是简单的不停的加机器，其实是不对的。所以在高并发架构里通常都有缓存这个环节，缓存系统的设计就是为了承载高并发而生。所以单机承载的并发量都在每秒几万，甚至每秒数十万，对高并发的承载能力比数据库系统要高出一到两个数量级。所以你完全可以根据系统的业务特性，对那种写少读多的请求，引入缓存集群。具体来说，就是在写数据库的时候同时写一份数据到缓存集群里，然后用缓存集群来承载大部分的读请求。这样的话，通过缓存集群，就可以用更少的机器资源承载更高的并发。
+
+
+
+结语
+一个完整而复杂的高并发系统架构中，一定会包含：各种复杂的自研基础架构系统。各种精妙的架构设计.因此一篇小文顶多具有抛砖引玉的效果,但是数据库优化的思想差不多就这些了.

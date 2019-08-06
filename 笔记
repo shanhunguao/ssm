@@ -59,6 +59,8 @@ Maven
 初始化 maven help:system
 https://blog.csdn.net/yhc2113/article/details/80779789
 https://www.ibm.com/developerworks/cn/java/j-lo-spring25-ioc/
+mybatis学习笔记;
+https://blog.csdn.net/dataiyangu/article/details/98024721
 BTM学习社区
 @Service 声明是一个bean对象,bean的id为类名首字母小写
 @Autiwire 扫描bean存在该注解属性会以byType方式注入
